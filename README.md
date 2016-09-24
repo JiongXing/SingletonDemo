@@ -57,44 +57,43 @@ static PlayerManager *_instance = nil;
 
 /// 重写以保证本类只开辟一块内存，对象唯一
 + (instancetype)allocWithZone:(struct _NSZone *)zone {
-static dispatch_once_t once;
-dispatch_once(&once, ^{
-_instance = [super allocWithZone:zone];
-});
-return _instance;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        _instance = [super allocWithZone:zone];
+    });
+    return _instance;
 }
 
 /// 重写以禁止开辟新内存
 - (id)copyWithZone:(struct _NSZone *)zone {
-return _instance;
+    return _instance;
 }
 
 /// 重写以进行各项初始化工作
 - (instancetype)init {
-static dispatch_once_t onceToken;
-dispatch_once(&onceToken, ^{
-_instance = [super init];
-_instance.player = [[AVPlayer alloc] init];
-});
-return _instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _instance = [super init];
+        _instance.player = [[AVPlayer alloc] init];
+    });
+    return _instance;
 }
 
 /// 取本类单例
 + (instancetype)shareInstance {
-static dispatch_once_t once;
-dispatch_once(&once, ^{
-_instance = [[self alloc] init];
-});
-return _instance;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        _instance = [[self alloc] init];
+    });
+    return _instance;
 }
 
 /// 取本类单例管理的对象
 + (AVPlayer *)sharePlayer {
-return [PlayerManager shareInstance].player;
+    return [PlayerManager shareInstance].player;
 }
 
 @end
-
 ```
 
 > 测试：
@@ -112,33 +111,34 @@ return [PlayerManager shareInstance].player;
 #import "PlayerManager.h"
 
 int main(int argc, const char * argv[]) {
-@autoreleasepool {
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-PlayerManager *manager1 = [PlayerManager shareInstance];
-AVPlayer *player1 = [PlayerManager sharePlayer];
-NSLog(@"manager1:%@, player1:%@", manager1, player1);
-});
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-PlayerManager *manager2 = [[PlayerManager alloc] init];
-NSLog(@"manager2:%@", manager2);
-});
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-PlayerManager *manager3 = [[PlayerManager alloc] init];
-NSLog(@"manager3:%@", manager3);
-});
-
-// 1秒后结束进程
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-exit(0);
-});
-while (YES) {
-
+    @autoreleasepool {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            PlayerManager *manager1 = [PlayerManager shareInstance];
+            AVPlayer *player1 = [PlayerManager sharePlayer];
+            NSLog(@"manager1:%@, player1:%@", manager1, player1);
+        });
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            PlayerManager *manager2 = [[PlayerManager alloc] init];
+            NSLog(@"manager2:%@", manager2);
+        });
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            PlayerManager *manager3 = [[PlayerManager alloc] init];
+            NSLog(@"manager3:%@", manager3);
+        });
+        
+        // 1秒后结束进程
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            exit(0);
+        });
+        while (YES) {
+            
+        }
+    }
+    return 0;
 }
-}
-return 0;
-}
+
 ```
 
 > 控制台输出：
