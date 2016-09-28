@@ -43,9 +43,10 @@
 
 #import "PlayerManager.h"
 
+/// 唯一实例
 static PlayerManager *_instance = nil;
 
-@interface PlayerManager ()
+@interface PlayerManager () <NSCopying, NSMutableCopying>
 
 /// 本类管理的成员变量
 @property (nonatomic, strong) AVPlayer *player;
@@ -66,6 +67,11 @@ static PlayerManager *_instance = nil;
 
 /// 重写以禁止开辟新内存
 - (id)copyWithZone:(struct _NSZone *)zone {
+    return _instance;
+}
+
+/// 重写以禁止开辟新内存
+- (id)mutableCopyWithZone:(NSZone *)zone {
     return _instance;
 }
 
